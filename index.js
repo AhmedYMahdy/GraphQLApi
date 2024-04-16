@@ -1,29 +1,14 @@
-const {ApolloServer, gql}= require('apollo-server');
+const { ApolloServer, gql } = require("apollo-server");
+const SessionAPI = require("./datasources/sessions");
+const typeDefs =require("./schema.js")
+const resolvers = require("./resolvers.js")
 
+const dataSources = () => ({
+  sessionAPI: new SessionAPI(),
+});
 
-const typeDefs = gql`
-type Query {
-    Sessions : [Session]
-}
+const server = new ApolloServer({ typeDefs, resolvers, dataSources});  // we can add --introspection: false-- to hide the schema
 
-type Session {
-    id:ID!,
-    title: String!,
-    description: String,
-    startsAt: String,
-    endsAt: String,
-    room: String,
-    day: String,
-    format: String,
-    track: String,
-    level: String
-}`
-
-const server = new ApolloServer({typeDefs});
-
-
-server
-    .listen({port:process.env.port||4000})
-    .then(({url})=>{
-        console.log(`graphQl running at ${url}`);
-    })
+server.listen({ port: process.env.port || 4000 }).then(({ url }) => {
+  console.log(`graphQl running at ${url}`);
+});
